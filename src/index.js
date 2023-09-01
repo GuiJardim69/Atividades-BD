@@ -7,6 +7,7 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(roteadorUsuario);
 
 app.get("/", (req, res) => {
   res.json({
@@ -18,4 +19,3 @@ app.listen(port, () => {
   // Um socket para "escutar" as requisições
   console.log(`Serviço escutando na porta:  ${port}`);
 });
-app.use(roteadorUsuario);
