@@ -1,48 +1,85 @@
-//bd.js
-import pkg from "pg";
-const { Pool } = pkg;
+//index.js
+import dotenv from "dotenv";
+import express from "express";
 
-async function connect() {
-  const pool = new Pool({
-    connectionString: process.env.URL_BD,
+
+dotenv.config();
+
+const app = express(); // Instancia o Express
+const port = 3000; // Define a porta
+
+app.get("/", (req, res) => {
+  console.log("Rota / solicitada");
+  // Cria a rota da raiz do projeto
+  res.json({
+    nome: "Guilherme dos Santos Jardim", // Substitua pelo seu nome
   });
-  return pool.connect();
-}
+});
 
-async function selectUsuarios() {
-  const client = await connect();
-  const res = await client.query("SELECT * FROM usuario");
-  return res.rows;
-}
+app.get("/usuarios", async (req, res) => {
+  try {
+    const usuarios = await selectUsuarios();
+    res.json(usuarios);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message || "Erro!" });
+  }
 
-//bd.js
-async function selectUsuario(id) {
-  const client = await connect();
-  const query = "SELECT * FROM usuario WHERE id = $1";
-  const usuario = [id];
-  const res = await client.query(query, usuario);
-  return res.rows;
-}
-//bd.js
-async function insertUsuario(data) {
-  const client = await connect();
-  const query = "INSERT INTO usuario (nome,senha,email) VALUES ($1,$2,$3) ";
-  const usuario = [data.nome, data.senha, data.email];
-  await client.query(query, usuario);
-}
-//bd.js
-async function deleteUsuario(id) {
-  const client = await connect();
-  const query = "DELETE FROM usuario WHERE id = $1";
-  await client.query(query, [id]);
-}
-//bd.js
-async function updateUsuario(data) {
-  const client = await connect();
-  const query =
-    "UPDATE usuario SET nome = $1, email = $2, senha = $3 WHERE id = $4";
-  const usuario = [data.nome, data.email, data.senha, data.id];
-  await client.query(query, usuario);
-}
-//bd.js
-export { selectUsuarios, selectUsuario, insertUsuario, deleteUsuario, updateUsuario };
+  console.log("Rota GET/usuarios solicitada");
+});
+
+app.listen(port, () => {
+  // Um socket para "escutar" as requisições
+  console.log(`Serviço escutando na porta:  ${port}`);
+});
+//index.js
+app.get("/usuario/:id", async (req, res) => {
+  console.log("Rota GET /usuario solicitada");
+  try {
+    const usuario = await selectUsuario(req.params.id);
+    if (usuario.length > 0) res.json(usuario);
+    else res.status(404).json({ message: "Usuário não encontrado!" });
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message || "Erro!" });
+  }
+});
+//index.js
+app.use(express.json());
+//index.js
+app.post("/usuario", async (req, res) => {
+  console.log("Rota POST /usuario solicitada");
+  try {
+    await insertUsuario(req.body);
+    res.status(201).json({ message: "Usuário inserido com sucesso!" });
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message || "Erro!" });
+  }
+});
+//index.js
+app.delete("/usuario/:id", async (req, res) => {
+  console.log("Rota DELETE /usuario solicitada");
+  try {
+    const usuario = await selectUsuario(req.params.id);
+    if (usuario.length > 0) {
+      await deleteUsuario(req.params.id);
+      res.status(200).json({ message: "Usuário excluido com sucesso!!" });
+    } else res.status(404).json({ message: "Usuário não encontrado!" });
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message || "Erro!" });
+  }
+});
+//index.js
+import { selectUsuarios, selectUsuario, insertUsuario, deleteUsuario, updateUsuario } from "../bd.js";
+//index.js
+app.put("/usuario", async (req, res) => {
+  console.log("Rota PUT /usuario solicitada");
+  try {
+    const usuario = await selectUsuario(req.body.id);
+    if (usuario.length > 0) {
+      await updateUsuario(req.body);
+      res.status(200).json({ message: "Usuário atualizado com sucesso!" });
+    } else res.status(404).json({ message: "Usuário não encontrado!" });
+  } catch (error) {
+    console.log(error);
+    res.status(error.status || 500).json({ message: error.message || "Erro!" });
+  }
+});
