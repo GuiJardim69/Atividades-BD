@@ -1,7 +1,8 @@
-import roteadorUsuario from "./routes/usuario.js";
 import dotenv from "dotenv";
 import express from "express";
 dotenv.config();
+
+import roteadorUsuario from "./routes/usuario.js";
 
 const app = express();
 const port = 3000;
