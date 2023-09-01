@@ -68,7 +68,7 @@ app.delete("/usuario/:id", async (req, res) => {
   }
 });
 //index.js
-import { selectUsuarios, selectUsuario, insertUsuario, deleteUsuario, updateUsuario } from "./bd.js";
+import { selectUsuarios, selectUsuario, insertUsuario, deleteUsuario, updateUsuario } from "../bd.js";
 //index.js
 app.put("/usuario", async (req, res) => {
   console.log("Rota PUT /usuario solicitada");
@@ -83,3 +83,5 @@ app.put("/usuario", async (req, res) => {
     res.status(error.status || 500).json({ message: error.message || "Erro!" });
   }
 });
+import roteadorUsuario from "./routes/usuario.js";
+app.use(roteadorUsuario);
