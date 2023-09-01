@@ -55,8 +55,6 @@ app.post("/usuario", async (req, res) => {
   }
 });
 //index.js
-import { selectUsuarios, selectUsuario, insertUsuario, deleteUsuario } from "./bd.js";
-//index.js
 app.delete("/usuario/:id", async (req, res) => {
   console.log("Rota DELETE /usuario solicitada");
   try {
@@ -66,6 +64,22 @@ app.delete("/usuario/:id", async (req, res) => {
       res.status(200).json({ message: "Usuário excluido com sucesso!!" });
     } else res.status(404).json({ message: "Usuário não encontrado!" });
   } catch (error) {
+    res.status(error.status || 500).json({ message: error.message || "Erro!" });
+  }
+});
+//index.js
+import { selectUsuarios, selectUsuario, insertUsuario, deleteUsuario, updateUsuario } from "./bd.js";
+//index.js
+app.put("/usuario", async (req, res) => {
+  console.log("Rota PUT /usuario solicitada");
+  try {
+    const usuario = await selectUsuario(req.body.id);
+    if (usuario.length > 0) {
+      await updateUsuario(req.body);
+      res.status(200).json({ message: "Usuário atualizado com sucesso!" });
+    } else res.status(404).json({ message: "Usuário não encontrado!" });
+  } catch (error) {
+    console.log(error);
     res.status(error.status || 500).json({ message: error.message || "Erro!" });
   }
 });
