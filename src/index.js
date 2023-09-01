@@ -1,3 +1,4 @@
+import roteadorUsuario from "./routes/usuario.js";
 import dotenv from "dotenv";
 import express from "express";
 dotenv.config();
@@ -9,7 +10,7 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.json({
-    message: "API para CRUD usuario: link_gitgub",
+    message: "API para CRUD usuario: https://github.com/GuiJardim69/Atividades-BD",
   });
 });
 
@@ -17,5 +18,4 @@ app.listen(port, () => {
   // Um socket para "escutar" as requisições
   console.log(`Serviço escutando na porta:  ${port}`);
 });
-import roteadorUsuario from "./routes/usuario.js";
 app.use(roteadorUsuario);
